@@ -105,4 +105,4 @@
           - lint
           - job-2
       - lint
-      when: << pipeline.parameters.run_base >>
+      when: << pipeline.parameters.run_sandbox_integration_tests >>
