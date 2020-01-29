@@ -36,9 +36,6 @@
     job-3:
       docker:
       - image: circleci/openjdk:latest-node
-      parameters:
-        env:
-          type: env_var_name
       steps:
         - run:
             command: |
@@ -93,9 +90,10 @@
           max-wait-time: "1800"
           workflow-name: ^(staging|production|sandbox)$
       - job-1:
-          env: TEST_ENV_STAGING
+          env: TEST_ENV_SANDBOX
           name: Test Job 1
       - job-2:
+          env: TEST_ENV_SANDBOX
           name: Test Job 2
           requires:
           - swissknife/queue_up_workflow
