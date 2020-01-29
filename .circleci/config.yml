@@ -20,6 +20,7 @@
       steps:
         - run:
             command: |
+              sleep 10
               echo 'test job 1'
       working_directory: /home/circleci/project
     job-2:
@@ -59,11 +60,11 @@
   orbs:
     swissknife: roopakv/swissknife@0.12.0
   parameters:
-    acceptance_config:
-      default: '{}'
-      type: string
-    run_base_tests:
+    run_base:
       default: true
+      type: boolean
+    run_sandbox_integration_tests:
+      default: false
       type: boolean
   version: 2.1
   workflows:
@@ -84,6 +85,7 @@
           requires:
           - lint
       - lint
+      when: << pipeline.parameters.run_base >>
     sandbox:
       jobs:
       - swissknife/queue_up_workflow:
@@ -101,3 +103,4 @@
           name: Test Job 2
           requires:
           - swissknife/queue_up_workflow
+      when: << pipeline.parameters.run_sandbox_integration_tests >>
