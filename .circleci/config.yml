@@ -1,31 +1,3 @@
-commands:
-    build:
-      description: Build
-      steps:
-      - run:
-          command: |
-            echo 'build'
-          name: Build
-    calculate_test_result:
-      description: Show persentage of failed specs
-      steps:
-      - run:
-          command: |
-            echo 'show result'
-          when: always
-    install:
-      description: Install Dependencies
-      steps:
-      - run:
-          command: |
-            echo 'install deps'
-          name: Install packages
-    test-api:
-      description: Test API
-      steps:
-        - run:
-          command: |
-            echo 'test api'
   jobs:
     bs-base:
       docker:
