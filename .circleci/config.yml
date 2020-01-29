@@ -24,8 +24,8 @@ commands:
       description: Test API
       steps:
         - run:
-            command: |
-              echo 'test api'
+          command: |
+            echo 'test api'
   jobs:
     bs-base:
       docker:
