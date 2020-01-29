@@ -88,19 +88,21 @@
       when: << pipeline.parameters.run_base >>
     sandbox:
       jobs:
-      - swissknife/queue_up_workflow:
-          max-wait-time: "1800"
-          workflow-name: ^(staging|production|sandbox)$
       - job-1:
           env: TEST_ENV_SANDBOX
-          name: Test Job 1
+          name: Test job 1
+          requires:
+          - lint
       - job-2:
           env: TEST_ENV_SANDBOX
-          name: Test Job 2
+          name: Test job 2
           requires:
-          - swissknife/queue_up_workflow
+          - lint
+          - job-1
       - job-3:
-          name: Test Job 2
+          name: Test job 3
           requires:
-          - swissknife/queue_up_workflow
-      when: << pipeline.parameters.run_sandbox_integration_tests >>
+          - lint
+          - job-2
+      - lint
+      when: << pipeline.parameters.run_base >>
