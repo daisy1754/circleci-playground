@@ -1,0 +1,133 @@
+commands:
+    build:
+      description: Build
+      steps:
+      - run:
+          command: |
+            echo 'build'
+          name: Build
+    calculate_test_result:
+      description: Show persentage of failed specs
+      steps:
+      - run:
+          command: |
+            echo 'show result'
+          when: always
+    install:
+      description: Install Dependencies
+      steps:
+      - run:
+          command: |
+            echo 'install deps'
+          name: Install packages
+    test-api:
+      description: Test API
+      steps:
+        - run:
+            command: |
+              echo 'test api'
+  jobs:
+    bs-base:
+      docker:
+      - image: circleci/openjdk:latest-node
+      parameters:
+        env:
+          type: env_var_name
+      steps:
+      - test-suite-b:
+          env: << parameters.env >>
+          max_sessions: 7
+          suite: checkout_base
+      working_directory: /home/circleci/project
+    job-1:
+      docker:
+      - image: circleci/openjdk:latest-node
+      parameters:
+        env:
+          type: env_var_name
+      steps:
+        - run:
+            command: |
+              echo 'test job 1'
+      working_directory: /home/circleci/project
+    job-2:
+      docker:
+      - image: circleci/openjdk:latest-node
+      parameters:
+        env:
+          type: env_var_name
+      steps:
+        - run:
+            command: |
+              echo 'test job 2'
+      working_directory: /home/circleci/project
+    job-3:
+      docker:
+      - image: circleci/openjdk:latest-node
+      parameters:
+        env:
+          type: env_var_name
+      steps:
+        - run:
+            command: |
+              echo 'test job 3'
+      working_directory: /home/circleci/project
+    lint:
+      docker:
+      - image: circleci/node:latest
+      resource_class: small
+      steps:
+      - checkout
+      - run:
+          command: 'echo lint'
+      working_directory: /home/circleci/project
+    test-api:
+      docker:
+      - image: circleci/openjdk:latest-node
+      steps:
+      - test-api
+      working_directory: /home/circleci/project
+  orbs:
+    swissknife: roopakv/swissknife@0.12.0
+  parameters:
+    acceptance_config:
+      default: '{}'
+      type: string
+    run_base_tests:
+      default: true
+      type: boolean
+  version: 2.1
+  workflows:
+    build:
+      jobs:
+      - job-1:
+          env: TEST_ENV_STAGING
+          name: Test job 1
+          requires:
+          - lint
+      - job-2:
+          env: TEST_ENV_SANDBOX
+          name: Test job 2
+          requires:
+          - lint
+      - job-3:
+          name: Test job 3
+          requires:
+          - lint
+      - lint
+    sandbox:
+      jobs:
+      - swissknife/queue_up_workflow:
+          max-wait-time: "1800"
+          workflow-name: ^(staging|production|sandbox)$
+      - job-1:
+          env: TEST_ENV_STAGING
+          name: Test Job 1
+      - job-2:
+          name: Test Job 2
+          requires:
+          - swissknife/queue_up_workflow
+      - job-3:
+          name: Test Job 2
+          requires:
+          - swissknife/queue_up_workflow
